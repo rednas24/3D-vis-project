@@ -147,7 +147,27 @@ public class PlayerMovement3D : MonoBehaviour,
         anim.PlayDizzy();
     }
 
-    // ===== Player 1 =====
+        public void PerformPunchHit()
+    {
+        // Only cactus (Player1) can destroy
+        if (playerType != PlayerType.Player1) return;
+
+        float radius = 1.5f;
+        Vector3 center = transform.position + transform.forward * 1f;
+
+        Collider[] hits = Physics.OverlapSphere(center, radius);
+
+        foreach (Collider hit in hits)
+        {
+            if (hit.CompareTag("Destroy"))
+            {
+                Destroy(hit.gameObject);
+                Debug.Log("Destroyed: " + hit.name);
+            }
+        }
+    }
+      
+        // ===== Player 1 =====
     public void OnWASD(InputAction.CallbackContext context)
     {
         if (playerType != PlayerType.Player1) return;
