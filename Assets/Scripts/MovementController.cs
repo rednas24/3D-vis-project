@@ -195,4 +195,26 @@ public class PlayerMovement3D : MonoBehaviour,
         anim.PlayAttack();
         Debug.Log(playerType + " Attack");
     }
+
+    public void OnInteract(InputAction.CallbackContext context)
+{
+    if (!context.performed) return;
+
+    float range = 2f;
+    anim.PlayAttack();
+    Vector3 center = transform.position + transform.forward * 1f;
+
+    Collider[] hits = Physics.OverlapSphere(center, range);
+
+    foreach (Collider hit in hits)
+    {
+        Interactable interactable = hit.GetComponent<Interactable>();
+
+        if (interactable != null)
+        {
+            interactable.Interact(this);
+            break;
+        }
+    }
+}
 }

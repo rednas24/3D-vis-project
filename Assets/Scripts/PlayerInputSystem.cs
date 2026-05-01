@@ -223,7 +223,7 @@ public partial class @PlayerInputSystem: IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""Attack"",
+                    ""name"": ""Interact"",
                     ""type"": ""Button"",
                     ""id"": ""867e7448-362c-48a7-b910-2c249bcd9fdb"",
                     ""expectedControlType"": """",
@@ -306,7 +306,7 @@ public partial class @PlayerInputSystem: IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Attack"",
+                    ""action"": ""Interact"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -352,7 +352,7 @@ public partial class @PlayerInputSystem: IInputActionCollection2, IDisposable
         m_Player2 = asset.FindActionMap("Player2", throwIfNotFound: true);
         m_Player2_Jump = m_Player2.FindAction("Jump", throwIfNotFound: true);
         m_Player2_ArrowsMovement = m_Player2.FindAction("ArrowsMovement", throwIfNotFound: true);
-        m_Player2_Attack = m_Player2.FindAction("Attack", throwIfNotFound: true);
+        m_Player2_Interact = m_Player2.FindAction("Interact", throwIfNotFound: true);
         // Universal
         m_Universal = asset.FindActionMap("Universal", throwIfNotFound: true);
         m_Universal_Pause = m_Universal.FindAction("Pause", throwIfNotFound: true);
@@ -558,7 +558,7 @@ public partial class @PlayerInputSystem: IInputActionCollection2, IDisposable
     private List<IPlayer2Actions> m_Player2ActionsCallbackInterfaces = new List<IPlayer2Actions>();
     private readonly InputAction m_Player2_Jump;
     private readonly InputAction m_Player2_ArrowsMovement;
-    private readonly InputAction m_Player2_Attack;
+    private readonly InputAction m_Player2_Interact;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player2".
     /// </summary>
@@ -579,9 +579,9 @@ public partial class @PlayerInputSystem: IInputActionCollection2, IDisposable
         /// </summary>
         public InputAction @ArrowsMovement => m_Wrapper.m_Player2_ArrowsMovement;
         /// <summary>
-        /// Provides access to the underlying input action "Player2/Attack".
+        /// Provides access to the underlying input action "Player2/Interact".
         /// </summary>
-        public InputAction @Attack => m_Wrapper.m_Player2_Attack;
+        public InputAction @Interact => m_Wrapper.m_Player2_Interact;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -614,9 +614,9 @@ public partial class @PlayerInputSystem: IInputActionCollection2, IDisposable
             @ArrowsMovement.started += instance.OnArrowsMovement;
             @ArrowsMovement.performed += instance.OnArrowsMovement;
             @ArrowsMovement.canceled += instance.OnArrowsMovement;
-            @Attack.started += instance.OnAttack;
-            @Attack.performed += instance.OnAttack;
-            @Attack.canceled += instance.OnAttack;
+            @Interact.started += instance.OnInteract;
+            @Interact.performed += instance.OnInteract;
+            @Interact.canceled += instance.OnInteract;
         }
 
         /// <summary>
@@ -634,9 +634,9 @@ public partial class @PlayerInputSystem: IInputActionCollection2, IDisposable
             @ArrowsMovement.started -= instance.OnArrowsMovement;
             @ArrowsMovement.performed -= instance.OnArrowsMovement;
             @ArrowsMovement.canceled -= instance.OnArrowsMovement;
-            @Attack.started -= instance.OnAttack;
-            @Attack.performed -= instance.OnAttack;
-            @Attack.canceled -= instance.OnAttack;
+            @Interact.started -= instance.OnInteract;
+            @Interact.performed -= instance.OnInteract;
+            @Interact.canceled -= instance.OnInteract;
         }
 
         /// <summary>
@@ -817,12 +817,12 @@ public partial class @PlayerInputSystem: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnArrowsMovement(InputAction.CallbackContext context);
         /// <summary>
-        /// Method invoked when associated input action "Attack" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// Method invoked when associated input action "Interact" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>
         /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnAttack(InputAction.CallbackContext context);
+        void OnInteract(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "Universal" which allows adding and removing callbacks.
