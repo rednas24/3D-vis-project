@@ -7,121 +7,71 @@ namespace WeaponsAndPropsAssetPack_NAS.Scripts
     {
         [SerializeField] private Transform wholeObject;
         [SerializeField] private Transform fracturedObject;
-        [SerializeField] private bool isCyclic;
 
-        // Core Variables
+        // NEW
+        [SerializeField] private GameObject keyPrefab;
+        [SerializeField] private Transform keySpawnPoint;
+
         private bool isBroken;
-        private bool isClean;
-        private bool objectReseted = true;
         private Transform fracturedObjectInstance;
-        private bool shouldBreak;
 
-        // Variables to showcase in cycle
         private const float timeToCleanUp = 5f;
-        private const float timeToStartDestruction = 2f;
-        private const float timeToReconstructObject = 2f;
-        private const float cycleTime = 0.2f;
-        private const float timerTimeUnit = 1f;
-        
-        private void Start()
-        {
-            TriggerBreak();
-        }
 
-        private void TriggerBreak()
+        public void TriggerBreak()
         {
-            // Methods For Cyclic Use (I.E Destroy On Loop -  For Showcase)
-            if (isCyclic)
-            {
-                StartCoroutine(CycleDestruction());
-            }
-            // Methods For Single Use (I.E Destroy Once)
-            else
-            {
-                StartCoroutine(DestroyOnce());
-            }
-        }
+            if (isBroken) return;
 
-        // Core Methods For Single Use (I.E Destroy Once)
-        private IEnumerator DestroyOnce()
-        {
-            objectReseted = false;
-            shouldBreak = true;
-            yield return null;
-        }
-
-        private void Update()
-        {
-            if (shouldBreak)
-            {
-                BreakObject();
-            }
+            BreakObject();
         }
 
         private void BreakObject()
         {
             wholeObject.gameObject.SetActive(false);
-            fracturedObjectInstance = Instantiate(fracturedObject);
-            fracturedObjectInstance.position = wholeObject.position;
-            fracturedObjectInstance.gameObject.SetActive(true);
-            isBroken = true;
-            shouldBreak = false;
-            StartCoroutine(CleanUpCoroutine());
-        }
 
-        private void CleanUp()
-        {
-            isClean = true;
-            Destroy(fracturedObjectInstance.gameObject);
-        }
+            Collider col = GetComponent<Collider>();
 
-        private IEnumerator ResetObject()
-        {
-            if (isClean)
+            if (col != null)
             {
-                yield return new WaitForSeconds(timeToReconstructObject);
-                wholeObject.gameObject.SetActive(true);
-                isBroken = false;
-                isClean = false;
-                objectReseted = true;
+                col.enabled = false;
             }
+
+            fracturedObjectInstance = Instantiate(
+                fracturedObject,
+                wholeObject.position,
+                wholeObject.rotation
+            );
+
+            fracturedObjectInstance.gameObject.SetActive(true);
+
+            // Spawn key
+            if (keyPrefab != null)
+            {
+                Vector3 spawnPosition = transform.position;
+
+                if (keySpawnPoint != null)
+                {
+                    spawnPosition = keySpawnPoint.position;
+                }
+
+                Instantiate(
+                    keyPrefab,
+                    spawnPosition,
+                    Quaternion.identity
+                );
+            }
+
+            isBroken = true;
+
+            StartCoroutine(CleanUpCoroutine());
         }
 
         private IEnumerator CleanUpCoroutine()
         {
-            float timer = 0f;
-            while (isBroken && !isClean)
+            yield return new WaitForSeconds(timeToCleanUp);
+
+            if (fracturedObjectInstance != null)
             {
-                if (timer >= timeToCleanUp)
-                {
-                    CleanUp();
-                }
-
-                yield return new WaitForSeconds(timerTimeUnit);
-                timer += 1f;
-            }
-
-            // Methods For Cyclic Use (I.E Destroy On Loop -  For Showcase)
-            if (isCyclic)
-            {
-                yield return ResetObject();
-            }
-
-            yield return null;
-        }
-
-        // Methods For Cyclic Use (I.E Destroy On Loop -  For Showcase)
-        private IEnumerator CycleDestruction()
-        {
-            while (true)
-            {
-                if (objectReseted)
-                {
-                    yield return new WaitForSeconds(timeToStartDestruction);
-                    objectReseted = false;
-                    shouldBreak = true;
-                }
-                yield return new WaitForSeconds(cycleTime);
+                Destroy(fracturedObjectInstance.gameObject);
             }
         }
     }

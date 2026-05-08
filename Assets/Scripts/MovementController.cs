@@ -58,8 +58,8 @@ public class PlayerMovement3D : MonoBehaviour,
     {
         // Movement
         Vector3 velocity = rb.linearVelocity;
-        velocity.x = moveInput.x * moveSpeed;
-        velocity.z = moveInput.y * moveSpeed;
+        velocity.x = -moveInput.y * moveSpeed;
+        velocity.z = moveInput.x * moveSpeed;
         rb.linearVelocity = velocity;
 
         // Stop unwanted spinning
@@ -97,7 +97,7 @@ public class PlayerMovement3D : MonoBehaviour,
 
     private void RotateCharacter()
     {
-        Vector3 moveDirection = new Vector3(moveInput.x, 0f, moveInput.y);
+        Vector3 moveDirection = new Vector3(-moveInput.y, 0f, moveInput.x);
 
         if (moveDirection.sqrMagnitude > 0.01f)
         {
@@ -147,7 +147,7 @@ public class PlayerMovement3D : MonoBehaviour,
         anim.PlayDizzy();
     }
 
-        public void PerformPunchHit()
+    public void PerformPunchHit()
     {
         // Only cactus (Player1) can destroy
         if (playerType != PlayerType.Player1) return;
@@ -161,8 +161,14 @@ public class PlayerMovement3D : MonoBehaviour,
         {
             if (hit.CompareTag("Destroy"))
             {
-                Destroy(hit.gameObject);
-                Debug.Log("Destroyed: " + hit.name);
+                WeaponsAndPropsAssetPack_NAS.Scripts.Breakable breakable =
+                    hit.GetComponent<WeaponsAndPropsAssetPack_NAS.Scripts.Breakable>();
+
+                if (breakable != null)
+                {
+                    breakable.TriggerBreak();
+                    Debug.Log("Broke: " + hit.name);
+                }
             }
         }
     }

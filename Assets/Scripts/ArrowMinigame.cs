@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using TMPro;
@@ -9,6 +10,12 @@ public class ArrowMinigame : MonoBehaviour,
     public int sequenceLength = 5;
     public float timeLimit = 3f;
     public TextMeshProUGUI debugText;
+    public Animator chestAnimator;
+    public Transform keyObject;
+    public Transform keyRaisedPosition;
+
+    public float keyRiseSpeed = 2f;
+    public float chestOpenTime = 5f;
 
     private List<Vector2> sequence = new List<Vector2>();
     private int currentIndex = 0;
@@ -127,6 +134,9 @@ else
     private void Success()
     {
         Debug.Log("SUCCESS!");
+
+        StartCoroutine(ChestRewardRoutine());
+
         EndMinigame();
     }
 
@@ -146,6 +156,83 @@ else
         if (currentPlayer != null)
             currentPlayer.enabled = true;
     }
+
+    private IEnumerator ChestRewardRoutine()
+{
+    Debug.Log("Reward routine started");
+
+    // Open chest
+    if (chestAnimator != null)
+    {
+        chestAnimator.Play("Chest_Open");
+        Debug.Log("Playing open animation");
+    }
+    else
+    {
+        Debug.LogError("Chest animator missing");
+    }
+
+    if (keyObject == null)
+    {
+        Debug.LogError("KEY OBJECT IS NULL");
+        yield break;
+    }
+
+    if (keyRaisedPosition == null)
+    {
+        Debug.LogError("KEY RAISED POSITION IS NULL");
+        yield break;
+    }
+
+    Debug.Log("Moving key");
+
+    Vector3 startPos = keyObject.position;
+    Vector3 targetPos = keyRaisedPosition.position;
+
+    float t = 0f;
+
+    while (t < 1f)
+    {
+        t += Time.deltaTime * keyRiseSpeed;
+
+        keyObject.position = Vector3.Lerp(
+            startPos,
+            targetPos,
+            t
+        );
+
+        yield return null;
+    }
+
+    Debug.Log("Key fully raised");
+
+    yield return new WaitForSeconds(chestOpenTime);
+
+    if (keyObject != null)
+    {
+        t = 0f;
+
+        while (t < 1f)
+        {
+            t += Time.deltaTime * keyRiseSpeed;
+
+            keyObject.position = Vector3.Lerp(
+                targetPos,
+                startPos,
+                t
+            );
+
+            yield return null;
+        }
+
+        Debug.Log("Closing chest");
+
+        if (chestAnimator != null)
+        {
+            chestAnimator.Play("Chest_Close");
+        }
+    }
+}
 
     // ===== INPUT (Player2 ONLY) =====
 

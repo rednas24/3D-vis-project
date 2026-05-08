@@ -4,6 +4,9 @@ using UnityEngine;
 public class PlayerPickup : MonoBehaviour
 {
     private PlayerMovement3D playerMovement;
+    public Key carriedKey;
+
+    public bool hasKey = false;
 
     private void Awake()
     {
@@ -16,11 +19,20 @@ public class PlayerPickup : MonoBehaviour
         if (playerMovement.playerType != PlayerMovement3D.PlayerType.Player1)
             return;
 
-        Key key = other.GetComponent<Key>();
+        // Already carrying a key
+        if (hasKey)
+            return;
+
+        Key key = other.GetComponentInParent<Key>();
 
         if (key != null)
         {
             key.Pickup(gameObject);
+
+            carriedKey = key;
+            hasKey = true;
+
+            Debug.Log("Picked up key");
         }
     }
 }
