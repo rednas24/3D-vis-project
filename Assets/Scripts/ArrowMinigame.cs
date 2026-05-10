@@ -1,15 +1,28 @@
-using System.Collections.Generic;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using TMPro;
+using UnityEngine.UI;
 
 public class ArrowMinigame : MonoBehaviour,
     PlayerInputSystem.IPlayer2Actions
 {
+    [Header("UI")]
+    public GameObject minigameUI;
+
+    [Header("Minigame Settings")]
     public int sequenceLength = 5;
     public float timeLimit = 3f;
-    public TextMeshProUGUI debugText;
+
+    [Header("Arrow UI")]
+    public Image[] arrowImages;
+
+    public Sprite upSprite;
+    public Sprite downSprite;
+    public Sprite leftSprite;
+    public Sprite rightSprite;
+
+    [Header("Chest")]
     public Animator chestAnimator;
     public Transform keyObject;
     public Transform keyRaisedPosition;
@@ -18,11 +31,13 @@ public class ArrowMinigame : MonoBehaviour,
     public float chestOpenTime = 5f;
 
     private List<Vector2> sequence = new List<Vector2>();
+
     private int currentIndex = 0;
     private float timer;
 
     private PlayerInputSystem input;
     private PlayerMovement3D currentPlayer;
+
     private bool active = false;
 
     private void Awake()
@@ -30,37 +45,49 @@ public class ArrowMinigame : MonoBehaviour,
         input = new PlayerInputSystem();
     }
 
-    public void StartMinigame(PlayerMovement3D player)
-{
-    Debug.Log("StartMinigame called");
-
-    if (input == null)
+    private void Start()
     {
-        Debug.LogError("INPUT IS NULL");
-        input = new PlayerInputSystem();
+        if (minigameUI != null)
+        {
+            minigameUI.SetActive(false);
+        }
     }
 
-    currentPlayer = player;
-    active = true;
-    if (debugText == null)
-{
-    Debug.LogError("DEBUG TEXT IS NULL!");
-}
-else
-{
-    Debug.Log("DEBUG TEXT FOUND → enabling");
-    debugText.gameObject.SetActive(true);
-}
+    public void StartMinigame(PlayerMovement3D player)
+    {
+        Debug.Log("StartMinigame called");
 
-    GenerateSequence();
-    currentIndex = 0;
-    timer = timeLimit;
+        if (minigameUI != null)
+        {
+            minigameUI.SetActive(true);
+        }
 
-    input.Player2.AddCallbacks(this);
-    input.Player2.Enable();
+        if (arrowImages.Length < sequenceLength)
+        {
+            Debug.LogError("Not enough arrow images assigned!");
+            return;
+        }
 
-    Debug.Log("Minigame successfully started");
-}
+        currentPlayer = player;
+
+        // LOCK PLAYER MOVEMENT
+        if (currentPlayer != null)
+        {
+            currentPlayer.enabled = false;
+        }
+
+        active = true;
+
+        GenerateSequence();
+
+        currentIndex = 0;
+        timer = timeLimit;
+
+        input.Player2.AddCallbacks(this);
+        input.Player2.Enable();
+
+        Debug.Log("Minigame successfully started");
+    }
 
     private void Update()
     {
@@ -75,41 +102,63 @@ else
     }
 
     private void GenerateSequence()
-{
-    sequence.Clear();
-
-    Vector2[] directions = {
-        Vector2.up,
-        Vector2.down,
-        Vector2.left,
-        Vector2.right
-    };
-
-    for (int i = 0; i < sequenceLength; i++)
     {
-        sequence.Add(directions[Random.Range(0, directions.Length)]);
+        sequence.Clear();
+
+        Vector2[] directions =
+        {
+            Vector2.up,
+            Vector2.down,
+            Vector2.left,
+            Vector2.right
+        };
+
+        for (int i = 0; i < sequenceLength; i++)
+        {
+            sequence.Add(
+                directions[Random.Range(0, directions.Length)]
+            );
+        }
+
+        // RESET UI
+        for (int i = 0; i < arrowImages.Length; i++)
+        {
+            arrowImages[i].gameObject.SetActive(false);
+        }
+
+        // DISPLAY SEQUENCE
+        for (int i = 0; i < sequence.Count; i++)
+        {
+            arrowImages[i].gameObject.SetActive(true);
+
+            if (sequence[i] == Vector2.up)
+            {
+                arrowImages[i].sprite = upSprite;
+            }
+            else if (sequence[i] == Vector2.down)
+            {
+                arrowImages[i].sprite = downSprite;
+            }
+            else if (sequence[i] == Vector2.left)
+            {
+                arrowImages[i].sprite = leftSprite;
+            }
+            else if (sequence[i] == Vector2.right)
+            {
+                arrowImages[i].sprite = rightSprite;
+            }
+
+            arrowImages[i].color = Color.white;
+        }
+
+        Debug.Log("Sequence generated");
     }
-
-    string seqText = "";
-
-    foreach (var dir in sequence)
-    {
-        if (dir == Vector2.up) seqText += "↑ ";
-        else if (dir == Vector2.down) seqText += "↓ ";
-        else if (dir == Vector2.left) seqText += "← ";
-        else if (dir == Vector2.right) seqText += "→ ";
-    }
-
-    Debug.Log("Sequence: " + seqText);
-
-    if (debugText != null)
-        debugText.text = seqText;
-}
 
     private void CheckInput(Vector2 inputDir)
     {
         if (!active) return;
-        if (currentIndex >= sequence.Count) return; // ✅ safety
+
+        if (currentIndex >= sequence.Count) return;
 
         Debug.Log("Input: " + inputDir);
 
@@ -117,8 +166,12 @@ else
         {
             Debug.Log("Correct!");
 
+            // CURRENT ARROW TURNS GREEN
+            arrowImages[currentIndex].color = Color.green;
+
             currentIndex++;
 
+            // FINISHED
             if (currentIndex >= sequence.Count)
             {
                 Success();
@@ -127,6 +180,10 @@ else
         else
         {
             Debug.Log("Wrong input!");
+
+            // CURRENT ARROW TURNS RED
+            arrowImages[currentIndex].color = Color.red;
+
             Fail();
         }
     }
@@ -143,73 +200,78 @@ else
     private void Fail()
     {
         Debug.Log("FAILED!");
+
         EndMinigame();
     }
 
     private void EndMinigame()
     {
         active = false;
-        debugText.gameObject.SetActive(false);
 
         input.Player2.Disable();
 
+        if (minigameUI != null)
+        {
+            minigameUI.SetActive(false);
+        }
+
+        // UNLOCK PLAYER
         if (currentPlayer != null)
+        {
             currentPlayer.enabled = true;
+        }
+
+        Debug.Log("Minigame Ended");
     }
 
     private IEnumerator ChestRewardRoutine()
-{
-    Debug.Log("Reward routine started");
-
-    // Open chest
-    if (chestAnimator != null)
     {
-        chestAnimator.Play("Chest_Open");
-        Debug.Log("Playing open animation");
-    }
-    else
-    {
-        Debug.LogError("Chest animator missing");
-    }
+        Debug.Log("Reward routine started");
 
-    if (keyObject == null)
-    {
-        Debug.LogError("KEY OBJECT IS NULL");
-        yield break;
-    }
+        // OPEN CHEST
+        if (chestAnimator != null)
+        {
+            chestAnimator.Play("Chest_Open");
+        }
 
-    if (keyRaisedPosition == null)
-    {
-        Debug.LogError("KEY RAISED POSITION IS NULL");
-        yield break;
-    }
+        if (keyObject == null)
+        {
+            Debug.LogError("KEY OBJECT IS NULL");
+            yield break;
+        }
 
-    Debug.Log("Moving key");
+        if (keyRaisedPosition == null)
+        {
+            Debug.LogError("KEY RAISED POSITION IS NULL");
+            yield break;
+        }
 
-    Vector3 startPos = keyObject.position;
-    Vector3 targetPos = keyRaisedPosition.position;
+        Debug.Log("Moving key");
 
-    float t = 0f;
+        Vector3 startPos = keyObject.position;
+        Vector3 targetPos = keyRaisedPosition.position;
 
-    while (t < 1f)
-    {
-        t += Time.deltaTime * keyRiseSpeed;
+        float t = 0f;
 
-        keyObject.position = Vector3.Lerp(
-            startPos,
-            targetPos,
-            t
-        );
+        // RAISE KEY
+        while (t < 1f)
+        {
+            t += Time.deltaTime * keyRiseSpeed;
 
-        yield return null;
-    }
+            keyObject.position = Vector3.Lerp(
+                startPos,
+                targetPos,
+                t
+            );
 
-    Debug.Log("Key fully raised");
+            yield return null;
+        }
 
-    yield return new WaitForSeconds(chestOpenTime);
+        Debug.Log("Key fully raised");
 
-    if (keyObject != null)
-    {
+        yield return new WaitForSeconds(chestOpenTime);
+
+        // LOWER KEY
         t = 0f;
 
         while (t < 1f)
@@ -232,20 +294,23 @@ else
             chestAnimator.Play("Chest_Close");
         }
     }
-}
 
-    // ===== INPUT (Player2 ONLY) =====
+    // ===== PLAYER 2 INPUT =====
 
     public void OnArrowsMovement(InputAction.CallbackContext context)
     {
         if (!active) return;
+
         if (!context.performed) return;
 
         Vector2 inputDir = context.ReadValue<Vector2>();
+
         CheckInput(inputDir);
     }
 
-    // Required but unused
+    // REQUIRED BUT UNUSED
+
     public void OnJump(InputAction.CallbackContext context) { }
+
     public void OnInteract(InputAction.CallbackContext context) { }
 }

@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PortalUnlock : MonoBehaviour
 {
@@ -24,14 +25,13 @@ public class PortalUnlock : MonoBehaviour
             Debug.Log("Inserted Keys: " + insertedKeys);
 
             // Remove carried key
-            Key carriedKey = player.GetComponentInChildren<Key>();
-
             if (player.carriedKey != null)
             {
                 Destroy(player.carriedKey.gameObject);
                 player.carriedKey = null;
             }
 
+            // Check if enough keys have been inserted
             if (insertedKeys >= requiredKeys)
             {
                 ActivatePortal();
@@ -44,5 +44,8 @@ public class PortalUnlock : MonoBehaviour
         activated = true;
 
         Debug.Log("Portal Activated!");
+
+        // Load score menu scene
+        SceneManager.LoadScene("ScoreMenu");
     }
 }
