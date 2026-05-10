@@ -192,8 +192,26 @@ public class ArrowMinigame : MonoBehaviour,
     {
         Debug.Log("SUCCESS!");
 
-        StartCoroutine(ChestRewardRoutine());
+        active = false;
 
+        StartCoroutine(SuccessRoutine());
+    }
+
+    private IEnumerator SuccessRoutine()
+    {
+        // TURN ALL ARROWS GREEN
+        for (int i = 0; i < arrowImages.Length; i++)
+        {
+            arrowImages[i].color = Color.green;
+        }
+
+        // Small delay so player sees success
+        yield return new WaitForSeconds(0.5f);
+
+        // Raise key and open chest
+        yield return StartCoroutine(ChestRewardRoutine());
+
+        // End minigame AFTER reward animation
         EndMinigame();
     }
 
@@ -256,6 +274,14 @@ public class ArrowMinigame : MonoBehaviour,
         // RAISE KEY
         while (t < 1f)
         {
+            // KEY WAS PICKED UP / DESTROYED
+            if (keyObject == null)
+            {
+                Debug.Log("Key was collected");
+
+                break;
+            }
+
             t += Time.deltaTime * keyRiseSpeed;
 
             keyObject.position = Vector3.Lerp(
@@ -269,7 +295,12 @@ public class ArrowMinigame : MonoBehaviour,
 
         Debug.Log("Key fully raised");
 
-        yield return new WaitForSeconds(chestOpenTime);
+        yield return new WaitForSeconds(3f);
+
+        if (chestAnimator != null)
+        {
+            chestAnimator.Play("Chest_Close");
+        }
 
         // LOWER KEY
         t = 0f;
