@@ -22,6 +22,9 @@ public class PortalActivator : MonoBehaviour
             portalObject.SetActive(true);
         }
 
+        // Destroy the object that entered the trigger
+        Destroy(gameObject);
+
         Debug.Log("Portal activated");
     }
 }

@@ -4,6 +4,8 @@ public class LiftPlatformDetector : MonoBehaviour
 {
     public PressurePlateLift pressurePlateLift;
 
+    private Transform originalParent;
+
     private void OnCollisionEnter(Collision collision)
     {
         PlayerMovement3D player =
@@ -15,7 +17,14 @@ public class LiftPlatformDetector : MonoBehaviour
         {
             pressurePlateLift.SetShroomOnPlatform(true);
 
-            collision.transform.SetParent(transform);
+            // Store original parent
+            originalParent = collision.transform.parent;
+
+            // Parent player to moving platform
+            collision.transform.SetParent(
+                pressurePlateLift.liftPlatform,
+                true
+            );
         }
     }
 
@@ -30,7 +39,11 @@ public class LiftPlatformDetector : MonoBehaviour
         {
             pressurePlateLift.SetShroomOnPlatform(false);
 
-            collision.transform.SetParent(null);
+            // Restore original parent
+            collision.transform.SetParent(
+                originalParent,
+                true
+            );
         }
     }
 }

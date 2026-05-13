@@ -57,10 +57,20 @@ public class PlayerMovement3D : MonoBehaviour,
     private void FixedUpdate()
     {
         // Movement
-        Vector3 velocity = rb.linearVelocity;
-        velocity.x = -moveInput.y * moveSpeed;
-        velocity.z = moveInput.x * moveSpeed;
-        rb.linearVelocity = velocity;
+Vector3 currentVelocity = rb.linearVelocity;
+
+        Vector3 targetVelocity = new Vector3(
+            -moveInput.y * moveSpeed,
+            currentVelocity.y,
+            moveInput.x * moveSpeed
+        );
+
+        // Smooth velocity instead of hard overwrite
+        rb.linearVelocity = Vector3.Lerp(
+            currentVelocity,
+            targetVelocity,
+            10f * Time.fixedDeltaTime
+        );
 
         // Stop unwanted spinning
         rb.angularVelocity = Vector3.zero;

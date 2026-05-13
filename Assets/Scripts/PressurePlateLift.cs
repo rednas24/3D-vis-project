@@ -9,13 +9,12 @@ public class PressurePlateLift : MonoBehaviour
     public ParticleSystem liftParticles;
 
     [Header("Movement")]
-    public Vector3 raisedOffset = new Vector3(0, 5f, 0);
-    public float moveSpeed = 2f;
+    public Vector3 raisedOffset = new Vector3(0, 4f, 0);
+    public float moveSpeed = 15f;
 
     [Header("Activation Delay")]
     public float moveDelay = 1f;
-
-    private float activationTimer = 0f;
+    private float delayTimer = 0f;
 
     private Vector3 startPosition;
     private Vector3 raisedPosition;
@@ -43,39 +42,40 @@ public class PressurePlateLift : MonoBehaviour
     {
         if (liftPlatform == null) return;
 
-        // Desired active state
         bool wantsToMove = activated && shroomOnPlatform;
 
-        // Smooth timer
+        // Build delay timer
         if (wantsToMove)
         {
-            activationTimer += Time.deltaTime;
+            delayTimer += Time.deltaTime;
         }
         else
         {
-            activationTimer -= Time.deltaTime;
+            delayTimer = 0f;
         }
 
-        // Clamp timer
-        activationTimer = Mathf.Clamp(
-            activationTimer,
-            0f,
-            moveDelay
-        );
-
-        // Move only when timer fully charged
-        bool shouldMove = activationTimer >= moveDelay;
+        // Only move after delay
+        bool shouldMove = delayTimer >= moveDelay;
 
         Vector3 targetPos =
             shouldMove ? raisedPosition : startPosition;
 
-        liftPlatform.position = Vector3.Lerp(
+        liftPlatform.position = Vector3.MoveTowards(
             liftPlatform.position,
             targetPos,
             moveSpeed * Time.deltaTime
         );
 
-        // Particles only depend on pressure plate
+        // Snap perfectly into place
+        if (Vector3.Distance(
+            liftPlatform.position,
+            targetPos
+        ) < 0.01f)
+        {
+            liftPlatform.position = targetPos;
+        }
+
+        // Particles
         if (liftParticles != null)
         {
             if (activated && !liftParticles.isPlaying)
