@@ -8,11 +8,15 @@ public class PortalUnlock : MonoBehaviour
     private int insertedKeys = 0;
     private bool activated = false;
 
+    [Header("Portal Effects")]
+    public ParticleSystem[] keyEffects;
+
     private void OnTriggerEnter(Collider other)
     {
         if (activated) return;
 
-        PlayerPickup player = other.GetComponent<PlayerPickup>();
+        PlayerPickup player =
+            other.GetComponent<PlayerPickup>();
 
         if (player == null) return;
 
@@ -31,7 +35,18 @@ public class PortalUnlock : MonoBehaviour
                 player.carriedKey = null;
             }
 
-            // Check if enough keys have been inserted
+            // Activate particle effect
+            int effectIndex = insertedKeys - 1;
+
+            if (effectIndex >= 0 &&
+                effectIndex < keyEffects.Length)
+            {
+                keyEffects[effectIndex].gameObject.SetActive(true);
+
+                keyEffects[effectIndex].Play();
+            }
+
+            // Check if enough keys inserted
             if (insertedKeys >= requiredKeys)
             {
                 ActivatePortal();
@@ -45,7 +60,6 @@ public class PortalUnlock : MonoBehaviour
 
         Debug.Log("Portal Activated!");
 
-        // Load score menu scene
         SceneManager.LoadScene("ScoreMenu");
     }
 }
