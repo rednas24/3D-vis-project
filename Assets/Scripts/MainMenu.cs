@@ -3,18 +3,34 @@ using UnityEngine.SceneManagement;
 
 public class MainMenu : MonoBehaviour
 {
-    // Name of your game scene
+    [Header("Scene Names")]
     public string gameSceneName = "Level_01_NIght";
-
-    // Name of your main menu scene
     public string mainMenuSceneName = "MainMenu";
+
+    [Header("Music")]
+    public AudioClip backgroundMusic;
+
+    private void Start()
+    {
+        // Make sure SoundManager exists
+        if (SoundManager.Instance != null)
+        {
+            // Only start music if nothing is already playing
+            if (!SoundManager.Instance.ambientSource.isPlaying)
+            {
+                SoundManager.Instance.PlayAmbient(backgroundMusic);
+            }
+        }
+        else
+        {
+            Debug.LogWarning("SoundManager instance not found.");
+        }
+    }
 
     // Start the game
     public void StartGame()
     {
         Debug.Log("StartGame button pressed.");
-
-        Debug.Log("Attempting to load scene: " + gameSceneName);
 
         SceneManager.LoadScene(gameSceneName);
 
