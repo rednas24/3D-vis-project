@@ -205,15 +205,6 @@ public partial class @PlayerInputSystem: IInputActionCollection2, IDisposable
             ""id"": ""9fd3ec73-a35f-4e3a-b0a1-80b0fc4f3d3d"",
             ""actions"": [
                 {
-                    ""name"": ""Jump"",
-                    ""type"": ""Button"",
-                    ""id"": ""910c2324-cb50-4704-866c-8b912984d9c1"",
-                    ""expectedControlType"": """",
-                    ""processors"": """",
-                    ""interactions"": """",
-                    ""initialStateCheck"": false
-                },
-                {
                     ""name"": ""ArrowsMovement"",
                     ""type"": ""Value"",
                     ""id"": ""814824fc-86dc-401b-9841-fc887fcba041"",
@@ -233,17 +224,6 @@ public partial class @PlayerInputSystem: IInputActionCollection2, IDisposable
                 }
             ],
             ""bindings"": [
-                {
-                    ""name"": """",
-                    ""id"": ""6cc04e96-8e58-4529-985f-7383b0df2c81"",
-                    ""path"": ""<Keyboard>/l"",
-                    ""interactions"": """",
-                    ""processors"": """",
-                    ""groups"": """",
-                    ""action"": ""Jump"",
-                    ""isComposite"": false,
-                    ""isPartOfComposite"": false
-                },
                 {
                     ""name"": ""2D Vector"",
                     ""id"": ""9b0ba701-e531-448d-81a8-295ef5ea94aa"",
@@ -302,7 +282,7 @@ public partial class @PlayerInputSystem: IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""93bf02f4-887b-4240-bfab-deebe7b967d7"",
-                    ""path"": ""<Keyboard>/k"",
+                    ""path"": ""<Keyboard>/rightShift"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
@@ -350,7 +330,6 @@ public partial class @PlayerInputSystem: IInputActionCollection2, IDisposable
         m_Player1_Attack = m_Player1.FindAction("Attack", throwIfNotFound: true);
         // Player2
         m_Player2 = asset.FindActionMap("Player2", throwIfNotFound: true);
-        m_Player2_Jump = m_Player2.FindAction("Jump", throwIfNotFound: true);
         m_Player2_ArrowsMovement = m_Player2.FindAction("ArrowsMovement", throwIfNotFound: true);
         m_Player2_Interact = m_Player2.FindAction("Interact", throwIfNotFound: true);
         // Universal
@@ -556,7 +535,6 @@ public partial class @PlayerInputSystem: IInputActionCollection2, IDisposable
     // Player2
     private readonly InputActionMap m_Player2;
     private List<IPlayer2Actions> m_Player2ActionsCallbackInterfaces = new List<IPlayer2Actions>();
-    private readonly InputAction m_Player2_Jump;
     private readonly InputAction m_Player2_ArrowsMovement;
     private readonly InputAction m_Player2_Interact;
     /// <summary>
@@ -570,10 +548,6 @@ public partial class @PlayerInputSystem: IInputActionCollection2, IDisposable
         /// Construct a new instance of the input action map wrapper class.
         /// </summary>
         public Player2Actions(@PlayerInputSystem wrapper) { m_Wrapper = wrapper; }
-        /// <summary>
-        /// Provides access to the underlying input action "Player2/Jump".
-        /// </summary>
-        public InputAction @Jump => m_Wrapper.m_Player2_Jump;
         /// <summary>
         /// Provides access to the underlying input action "Player2/ArrowsMovement".
         /// </summary>
@@ -608,9 +582,6 @@ public partial class @PlayerInputSystem: IInputActionCollection2, IDisposable
         {
             if (instance == null || m_Wrapper.m_Player2ActionsCallbackInterfaces.Contains(instance)) return;
             m_Wrapper.m_Player2ActionsCallbackInterfaces.Add(instance);
-            @Jump.started += instance.OnJump;
-            @Jump.performed += instance.OnJump;
-            @Jump.canceled += instance.OnJump;
             @ArrowsMovement.started += instance.OnArrowsMovement;
             @ArrowsMovement.performed += instance.OnArrowsMovement;
             @ArrowsMovement.canceled += instance.OnArrowsMovement;
@@ -628,9 +599,6 @@ public partial class @PlayerInputSystem: IInputActionCollection2, IDisposable
         /// <seealso cref="Player2Actions" />
         private void UnregisterCallbacks(IPlayer2Actions instance)
         {
-            @Jump.started -= instance.OnJump;
-            @Jump.performed -= instance.OnJump;
-            @Jump.canceled -= instance.OnJump;
             @ArrowsMovement.started -= instance.OnArrowsMovement;
             @ArrowsMovement.performed -= instance.OnArrowsMovement;
             @ArrowsMovement.canceled -= instance.OnArrowsMovement;
@@ -802,13 +770,6 @@ public partial class @PlayerInputSystem: IInputActionCollection2, IDisposable
     /// <seealso cref="Player2Actions.RemoveCallbacks(IPlayer2Actions)" />
     public interface IPlayer2Actions
     {
-        /// <summary>
-        /// Method invoked when associated input action "Jump" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
-        /// </summary>
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
-        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
-        void OnJump(InputAction.CallbackContext context);
         /// <summary>
         /// Method invoked when associated input action "ArrowsMovement" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
         /// </summary>

@@ -119,15 +119,6 @@
             "id": "9fd3ec73-a35f-4e3a-b0a1-80b0fc4f3d3d",
             "actions": [
                 {
-                    "name": "Jump",
-                    "type": "Button",
-                    "id": "910c2324-cb50-4704-866c-8b912984d9c1",
-                    "expectedControlType": "",
-                    "processors": "",
-                    "interactions": "",
-                    "initialStateCheck": false
-                },
-                {
                     "name": "ArrowsMovement",
                     "type": "Value",
                     "id": "814824fc-86dc-401b-9841-fc887fcba041",
@@ -147,17 +138,6 @@
                 }
             ],
             "bindings": [
-                {
-                    "name": "",
-                    "id": "6cc04e96-8e58-4529-985f-7383b0df2c81",
-                    "path": "<Keyboard>/l",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Jump",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
                 {
                     "name": "2D Vector",
                     "id": "9b0ba701-e531-448d-81a8-295ef5ea94aa",
@@ -216,7 +196,7 @@
                 {
                     "name": "",
                     "id": "93bf02f4-887b-4240-bfab-deebe7b967d7",
-                    "path": "<Keyboard>/k",
+                    "path": "<Keyboard>/rightShift",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
