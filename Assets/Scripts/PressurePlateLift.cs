@@ -16,6 +16,11 @@ public class PressurePlateLift : MonoBehaviour
     public float moveDelay = 1f;
     private float delayTimer = 0f;
 
+    [Header("Sound")]
+    public AudioSource liftAudioSource;
+    public float fadeSpeed = 2f;
+    public float targetVolume = 1f;
+
     private Vector3 startPosition;
     private Vector3 raisedPosition;
 
@@ -26,6 +31,12 @@ public class PressurePlateLift : MonoBehaviour
 
     private void Start()
     {
+        if (liftAudioSource != null)
+        {
+            liftAudioSource.volume = 0f;
+            liftAudioSource.Play();
+        }
+
         if (liftPlatform != null)
         {
             startPosition = liftPlatform.position;
@@ -52,6 +63,20 @@ public class PressurePlateLift : MonoBehaviour
         else
         {
             delayTimer = 0f;
+        }
+
+        if (liftAudioSource != null)
+        {
+            float desiredVolume =
+                (activated && shroomOnPlatform)
+                ? targetVolume
+                : 0f;
+
+            liftAudioSource.volume = Mathf.MoveTowards(
+                liftAudioSource.volume,
+                desiredVolume,
+                fadeSpeed * Time.deltaTime
+            );
         }
 
         // Only move after delay

@@ -11,6 +11,10 @@ public class PortalUnlock : MonoBehaviour
     [Header("Portal Effects")]
     public ParticleSystem[] keyEffects;
 
+    [Header("Sound")]
+    public AudioSource audioSource;
+    public AudioClip insertKeySound;
+
     private void OnTriggerEnter(Collider other)
     {
         if (activated) return;
@@ -27,6 +31,13 @@ public class PortalUnlock : MonoBehaviour
             insertedKeys++;
 
             Debug.Log("Inserted Keys: " + insertedKeys);
+
+            // Play sound
+            if (audioSource != null &&
+                insertKeySound != null)
+            {
+                audioSource.PlayOneShot(insertKeySound);
+            }
 
             // Remove carried key
             if (player.carriedKey != null)

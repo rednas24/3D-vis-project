@@ -4,9 +4,14 @@ using UnityEngine;
 public class PlayerPickup : MonoBehaviour
 {
     private PlayerMovement3D playerMovement;
+
     public Key carriedKey;
 
     public bool hasKey = false;
+
+    [Header("Sound")]
+    public AudioSource audioSource;
+    public AudioClip pickupSound;
 
     private void Awake()
     {
@@ -31,6 +36,17 @@ public class PlayerPickup : MonoBehaviour
 
             carriedKey = key;
             hasKey = true;
+
+            // Play pickup sound
+            if (audioSource != null && pickupSound != null)
+            {
+                Debug.Log("Playing pickup sound");
+                audioSource.PlayOneShot(pickupSound);
+            }
+            else
+            {
+                Debug.LogWarning("AudioSource or PickupSound missing!");
+            }
 
             Debug.Log("Picked up key");
         }

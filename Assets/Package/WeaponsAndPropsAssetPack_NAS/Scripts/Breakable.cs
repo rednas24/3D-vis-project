@@ -12,6 +12,10 @@ namespace WeaponsAndPropsAssetPack_NAS.Scripts
         [SerializeField] private GameObject keyPrefab;
         [SerializeField] private Transform keySpawnPoint;
 
+        [Header("Sound")]
+        [SerializeField] private AudioSource audioSource;
+        [SerializeField] private AudioClip breakSound;
+
         private bool isBroken;
         private Transform fracturedObjectInstance;
 
@@ -26,6 +30,12 @@ namespace WeaponsAndPropsAssetPack_NAS.Scripts
 
         private void BreakObject()
         {
+            // Play break sound
+            if (audioSource != null && breakSound != null)
+            {
+                audioSource.PlayOneShot(breakSound);
+            }
+
             wholeObject.gameObject.SetActive(false);
 
             Collider col = GetComponent<Collider>();

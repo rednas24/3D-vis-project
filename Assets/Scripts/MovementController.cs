@@ -1,20 +1,25 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-[RequireComponent(typeof(Rigidbody))]
-[RequireComponent(typeof(PlayerAnimationController))]
-public class PlayerMovement3D : MonoBehaviour,
+    [RequireComponent(typeof(Rigidbody))]
+    [RequireComponent(typeof(PlayerAnimationController))]
+    public class PlayerMovement3D : MonoBehaviour,
     PlayerInputSystem.IPlayer1Actions,
     PlayerInputSystem.IPlayer2Actions
 {
     public enum PlayerType { Player1, Player2 }
     public PlayerType playerType;
+    
 
     public float moveSpeed = 6f;
     public float jumpForce = 6f;
     public float bounceForce = 10f;
     public float groundCheckDistance = 0.2f;
     public LayerMask groundLayer;
+
+    [Header("Sound")]
+    public AudioSource audioSource;
+    public AudioClip stompSound;
 
     private PlayerInputSystem input;
     private Rigidbody rb;
@@ -134,6 +139,11 @@ Vector3 currentVelocity = rb.linearVelocity;
         {
             if (contact.normal.y > 0.5f)
             {
+                if (audioSource != null && stompSound != null)
+                {
+                    audioSource.PlayOneShot(stompSound);
+                }
+
                 Bounce();
                 otherPlayer.OnStomped();
                 break;
