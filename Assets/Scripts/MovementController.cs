@@ -35,12 +35,45 @@ using UnityEngine.InputSystem;
     {
         rb = GetComponent<Rigidbody>();
         anim = GetComponent<PlayerAnimationController>();
+
         input = new PlayerInputSystem();
+
+        if (PlayerPrefs.HasKey("InputBindings"))
+        {
+            input.asset.LoadBindingOverridesFromJson(
+                PlayerPrefs.GetString("InputBindings"));
+        }
 
         if (playerType == PlayerType.Player1)
             input.Player1.AddCallbacks(this);
         else
             input.Player2.AddCallbacks(this);
+
+            Debug.Log(
+            "Attack binding: " +
+            input.Player1.Attack.bindings[0].effectivePath);
+
+        if (PlayerPrefs.HasKey("InputBindings"))
+        {
+            string json = PlayerPrefs.GetString("InputBindings");
+
+            Debug.Log("Loading bindings: " + json);
+
+            input.asset.LoadBindingOverridesFromJson(json);
+        }
+    }
+
+        public void ReloadBindings()
+    {
+        if (PlayerPrefs.HasKey("InputBindings"))
+        {
+            input.asset.LoadBindingOverridesFromJson(
+                PlayerPrefs.GetString("InputBindings"));
+
+            Debug.Log(
+                "Attack binding now: " +
+                input.Player1.Attack.bindings[0].effectivePath);
+        }
     }
 
     private void OnEnable()

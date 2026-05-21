@@ -3,35 +3,54 @@ using UnityEngine.UI;
 using TMPro;
 using System.Collections.Generic;
 
-
 public class SettingsManager : MonoBehaviour
 {
     [Header("UI")]
     public TMP_Dropdown resolutionDropdown;
     public Slider volumeSlider;
+    public Toggle fullscreenToggle;
 
     private Resolution[] resolutions;
 
     // TEMP VALUES
     private int pendingResolutionIndex;
     private float pendingVolume;
+    private bool pendingFullscreen;
 
     private List<Resolution> filteredResolutions =
-    new List<Resolution>();
+        new List<Resolution>();
 
     private void Start()
     {
         SetupResolutions();
 
-        pendingVolume = AudioListener.volume;
+        // Load saved volume
+        pendingVolume =
+            PlayerPrefs.GetFloat(
+                "MasterVolume",
+                AudioListener.volume);
+
         volumeSlider.value = pendingVolume;
 
-        volumeSlider.onValueChanged.AddListener(UpdatePendingVolume);
+        // Load saved fullscreen
+        pendingFullscreen =
+            PlayerPrefs.GetInt(
+                "Fullscreen",
+                Screen.fullScreen ? 1 : 0) == 1;
 
-        resolutionDropdown.onValueChanged.AddListener(UpdatePendingResolution);
+        fullscreenToggle.isOn = pendingFullscreen;
+
+        volumeSlider.onValueChanged.AddListener(
+            UpdatePendingVolume);
+
+        resolutionDropdown.onValueChanged.AddListener(
+            UpdatePendingResolution);
+
+        fullscreenToggle.onValueChanged.AddListener(
+            UpdatePendingFullscreen);
     }
 
-        void SetupResolutions()
+    void SetupResolutions()
     {
         resolutionDropdown.ClearOptions();
 
@@ -70,10 +89,15 @@ public class SettingsManager : MonoBehaviour
 
         resolutionDropdown.AddOptions(options);
 
-        resolutionDropdown.value = currentResolutionIndex;
-        resolutionDropdown.RefreshShownValue();
+        pendingResolutionIndex =
+            PlayerPrefs.GetInt(
+                "ResolutionIndex",
+                currentResolutionIndex);
 
-        pendingResolutionIndex = currentResolutionIndex;
+        resolutionDropdown.value =
+            pendingResolutionIndex;
+
+        resolutionDropdown.RefreshShownValue();
     }
 
     // STORE TEMP RESOLUTION
@@ -88,6 +112,12 @@ public class SettingsManager : MonoBehaviour
         pendingVolume = volume;
     }
 
+    // STORE TEMP FULLSCREEN
+    public void UpdatePendingFullscreen(bool fullscreen)
+    {
+        pendingFullscreen = fullscreen;
+    }
+
     // APPLY SETTINGS
     public void ApplySettings()
     {
@@ -99,7 +129,6 @@ public class SettingsManager : MonoBehaviour
         Debug.Log("Settings Applied");
     }
 
-
     void ApplyResolution()
     {
         Resolution resolution =
@@ -108,13 +137,15 @@ public class SettingsManager : MonoBehaviour
         Screen.SetResolution(
             resolution.width,
             resolution.height,
-            FullScreenMode.Windowed
+            pendingFullscreen
         );
 
         Debug.Log(
             "Applied Resolution: " +
             resolution.width + "x" +
-            resolution.height
+            resolution.height +
+            " Fullscreen: " +
+            pendingFullscreen
         );
     }
 
@@ -133,6 +164,11 @@ public class SettingsManager : MonoBehaviour
         PlayerPrefs.SetFloat(
             "MasterVolume",
             pendingVolume
+        );
+
+        PlayerPrefs.SetInt(
+            "Fullscreen",
+            pendingFullscreen ? 1 : 0
         );
 
         PlayerPrefs.Save();
