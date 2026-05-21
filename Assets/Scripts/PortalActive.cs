@@ -71,6 +71,6 @@ public class PortalUnlock : MonoBehaviour
 
         Debug.Log("Portal Activated!");
 
-        SceneManager.LoadScene("ScoreMenu");
+        SceneManager.LoadScene("EndOfGame");
     }
 }

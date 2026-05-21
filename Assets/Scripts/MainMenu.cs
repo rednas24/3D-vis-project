@@ -5,7 +5,7 @@ public class MainMenu : MonoBehaviour
 {
     [Header("Scene Names")]
     public string gameSceneName = "Level_01_NIght";
-    public string mainMenuSceneName = "MainMenu";
+    public string mainMenuSceneName = "StartGame";
 
     [Header("Music")]
     public AudioClip backgroundMusic;
